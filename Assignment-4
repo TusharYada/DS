@@ -1,0 +1,259 @@
+#include<iostream>
+#include<string>
+#include<cstring>
+#include<cstdlib>
+using namespace std;
+int op;
+int cnt=0;
+class Node{
+    public:
+        Node *left;
+        Node *right;
+        char word[50],mean[50];
+};
+class BST{
+    public:
+        Node *root;
+        BST(){
+            root==NULL;
+        }
+        void create();
+        Node *insert(Node *,Node *);
+        void inorder(Node *);
+        void preorder(Node *);
+        void postorder(Node *);
+        void search(Node *,char[]);
+        void modify(Node*,char[]);
+        Node *del(Node*,char[]);
+        Node *Findmin(Node* );
+};
+void BST :: create(){
+    int op;
+    Node *temp;
+    do
+    {
+            temp = new Node;
+            cout<<"w";
+            cin>>temp->word;
+            cout<<"M";
+            cin>>temp->mean;
+            temp->left=temp->right=NULL;
+        if (root==NULL)
+        {
+            root= temp;
+        }
+        else{
+            root = insert(root,temp);
+        }
+        cout<<"Want to insert 1/0 to not insert";
+        cin>>op;
+    }while(op==1);
+    
+}
+
+Node *BST::insert(Node *root,Node *temp){
+        if (strcmp(temp->word,root->word) <0)
+        {
+            if (root->left==NULL)
+            {
+                root->left=temp;
+            }
+            else
+            {
+                insert(root->left,temp);
+            }
+        }
+        else
+        {
+            if (root->right==NULL)
+                root->right=temp;
+            else
+                insert(root->right,temp);
+        }
+        return root;
+}
+void BST::inorder(Node * temp){
+    if (temp!=NULL)
+    {
+        inorder(temp->left);
+        cout<<temp->word<<"->"<<temp->mean<<" , ";
+        inorder(temp->right);
+    }
+    
+}
+void BST::preorder(Node *temp){
+    if (temp!=NULL)
+    {
+        cout<<temp->word<<"->"<<temp->mean<<" ,";
+        preorder(temp->left);
+        preorder(temp->right);
+    }
+    
+}
+void BST :: postorder(Node *temp){
+    if (temp!=NULL)
+    {
+        postorder(temp->left);
+        postorder(temp->right);
+        cout<<temp->word<<"->"<<temp->mean<<" ,";
+        
+    }
+}
+void BST::search(Node *temp,char src[]){
+    if (temp!=NULL)
+    {
+        if (strcmp(temp->word,src) == 0)
+        {
+            cout<<"Found"<<temp->word<<"->"<<temp->mean;
+            cnt++;
+        }
+        else
+        {
+            if (strcmp(temp->word,src) < 0 )
+            {
+                search(temp->right,src);
+                cnt++;
+            }
+            else{
+                search(temp->left,src);
+                cnt++;
+            }   
+        }
+        
+    }
+    else{
+            cout<<"Word not f";
+        }
+        cout<<"No of cmp:"<<cnt;
+}
+void BST::modify(Node *temp, char src[]){
+    if (temp!=NULL)
+    {
+        if (strcmp(temp->word,src) ==0)
+        {
+            cout<<"F"<<endl;
+            cout<<"Enter NM";
+            cin>>temp->mean;
+        }else{
+        if ((strcmp(temp->word,src) )<0)
+        {
+            modify(temp->right,src);
+        }
+        else if ((strcmp(temp->word,src))>0)
+        {
+            modify(temp->left,src);
+        }
+    }
+    }
+    else
+    {
+        cout<<"Not Found";
+    }
+}
+Node *BST::del(Node *root,char src[]){
+    if (root!=NULL)
+    {
+        if (strcmp(root->word,src) > 0)
+        {
+            root->left=del(root->left,src);
+        }
+        else if (strcmp(root->word,src) < 0)
+        {
+            root->right=del(root->right,src);
+        }
+        else
+        {
+            if (root->left==NULL && root->right==NULL)
+            {
+                delete(root);
+                root==NULL;
+            }
+            else if (root->left==NULL && root->right!=NULL)
+            {
+                Node* temp = root;
+                root= root->right;
+                strcpy(root->word,temp->word);
+                strcpy(root->mean,temp->mean);
+                temp->right=NULL;
+                delete(root);
+            }
+            else if (root->right==NULL)
+            {
+                Node *temp = root;
+                root= root->left;
+                strcpy(root->word,temp->word);
+                strcpy(root->mean,temp->mean);
+                delete(root);
+            }
+            else
+            {
+                Node *temp = Findmin(root->right);
+                strcpy(root->word,temp->word);
+                strcpy(root->mean,temp->mean);
+                root->right=del(root->right,temp->word);
+            }     
+        }
+    }
+    return root;
+}
+Node *BST::Findmin(Node *root){
+        while (root->left!=NULL)
+        {
+            root=root->left;
+            
+        }
+    return root;    
+}
+int main(){
+    BST b;
+    int op;
+    int ch;
+    char src[100];
+    while(1)
+    {
+      cout<<"\n";
+        cout<<"1.InsertBST"<<endl;
+        cout<<"2.Display inorder,preorder,postorder"<<endl;
+        cout<<"3.Search word"<<endl;
+        cout<<"4.Modify"<<endl;
+        cout<<"5.Delete"<<endl;
+        cout<<"6.Exit"<<endl;
+        cout<<"Enter choice:"<<endl;
+       
+        cin>>ch;
+        switch (ch)
+        {
+        case 1:
+            b.create();
+            break;
+        case 2:
+			cout<<"\n Inorder : ";
+			b.inorder(b.root);
+			cout<<"\n Preorder : ";
+			b.preorder(b.root);
+			cout<<"\n Postorder : ";
+			b.postorder(b.root);
+			break;
+        case 3:
+            cnt=0;
+			cout<<"\n Enter The Word Want To Search : ";
+			cin>>src;
+			b.search(b.root , src);
+			break;
+        case 4:
+            cout<<"\n Enter The Word Want To Modify ";
+			cin>>src;
+			b.modify(b.root , src);
+			break;
+        case 5:
+            cout<<"\n Enter The Word Want To Delete ";
+			cin>>src;
+			b.del(b.root , src);
+			break;
+        default :
+			cout<<"\n Invalid Option ";
+			break;    
+    
+    }  
+    }
+}
